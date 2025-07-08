@@ -92,6 +92,32 @@ fa.sort(modeloh3)
 modelom3 <- fa(mujeres_g, nfactors = 3, rotate = "varimax", fm = "pa", normalize = TRUE)
 fa.sort(modelom3)
 
+# Modelo bifactor
+modelo_bifactor <- '
+  # Factor general (depresión)
+  G =~ DEP1 + DEP2 + DEP3 + DEP4 + DEP5 + DEP6 + DEP7 + DEP8 + DEP9 + DEP10 +
+       DEP11 + DEP12 + DEP13 + DEP14 + DEP15 + DEP16 + DEP17 + DEP18 + DEP19 + DEP20
+
+  # Factores específicos (no se correlacionan con G ni entre sí)
+  F1 =~ DEP1 + DEP2 + DEP3 + DEP5 + DEP6 + DEP7 + DEP10 + DEP11 + DEP13 + DEP14 + DEP17 + DEP18 + DEP20
+  F2 =~ DEP4 + DEP8 + DEP12 + DEP16
+  F3 =~ DEP9 + DEP15 + DEP19
+
+  # Ortogonalidad entre factores
+  G ~~ 0*F1
+  G ~~ 0*F2
+  G ~~ 0*F3
+  F1 ~~ 0*F2
+  F1 ~~ 0*F3
+  F2 ~~ 0*F3
+'
+
+# Ajustar el modelo bifactorial
+fit_bifactor <- cfa(modelo_bifactor, data = ces, estimator = "WLSMV", std.lv = TRUE)
+
+# Resumen del modelo
+summary(fit_bifactor, fit.measures = TRUE, standardized = TRUE)
+
 ### CONFIABILIDAD ###
 ces1 <- ces + 1
 
